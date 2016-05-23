@@ -1,0 +1,37 @@
+import os
+import numpy as np
+import pandas as pd
+
+pd.set_option('display.max_rows', 6)
+pd.set_option('display.notebook_repr_html', True)
+pd.set_option('display.max_columns', 10)
+
+df = pd.read_csv(os.path.join('..', 'datasets', 'zillow-02-start.csv'), index_col = 'ID')
+
+# ------ Removing Columns ---------
+
+# df.drop(['Latitude', 'Longitude'], axis = 1, inplace = True)
+# print df
+
+# ------ Converting All Prices to Dollars ---------
+# Create a new df object with all values in Sale Price Unit column set to $
+df_1 = df[df.SalePriceUnit == '$']
+
+# Delete Sales Price Unit column from new df object. (Workaround b/c DataFrame.drop() with inplace = True triggers a warning)
+df_1 = df_1.drop('SalePriceUnit', axis = 1)
+
+# Create a second new df object and stndardize Sale Price Unit column to the other value ($M)
+df_6 = df[df.SalePriceUnit == '$M']
+
+# Delete Sales Price Unit column from new df object
+df_6 = df_6.drop('SalePriceUnit', axis = 1)
+
+# Replacing the content of a column
+df_6.SalePrice = df_6.SalePrice * (10 ** 6)
+
+# Adding rows to a DataFrame
+# Concatenation of two DataFrame objects
+df = pd.concat([df_1, df_6])
+
+# ------ Converting studio from a boolean (True/False) to a binary variable (0 or 1) ------
+df['IsAStudio'] = 1 * df['IsAStudio']
